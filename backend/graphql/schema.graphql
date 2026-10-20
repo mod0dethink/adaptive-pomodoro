@@ -1,0 +1,12 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    me: User @auth
+}
+
+type User {
+    id: ID!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
