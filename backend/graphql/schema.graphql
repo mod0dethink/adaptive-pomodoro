@@ -1,9 +1,28 @@
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
 type Query {
+    # @auth: ログイン中のユーザーを返す（未ログインなら null）
     me: User @auth
 }
 
+type Mutation {
+    # @rules: 入力のチェック（メールは形式・255文字以内・重複なし、パスワードは8文字以上）
+    register(
+        email: String! @rules(apply: ["email", "max:255", "unique:users,email"])
+        password: String! @rules(apply: ["min:8"])
+    ): AuthPayload!
+
+    login(email: String!, password: String!): AuthPayload!
+
+    # @guard: ログイン中（有効なトークン付き）のときだけ実行できる
+    logout: Boolean! @guard
+}
+
+type AuthPayload {
+    token: String!
+}
+
+# ここに書いた項目だけが外から取り出せる。password は書かないので公開されない
 type User {
     id: ID!
     email: String!
