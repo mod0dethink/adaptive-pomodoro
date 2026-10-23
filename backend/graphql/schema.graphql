@@ -16,6 +16,32 @@ type Mutation {
 
     # @guard: ログイン中（有効なトークン付き）のときだけ実行できる
     logout: Boolean! @guard
+
+    createSession(
+        planned_minutes: Int! @rules(apply: ["min:1"])
+        actual_minutes: Int! @rules(apply: ["min:0"])
+        rating: Rating!
+        started_at: DateTime!
+        ended_at: DateTime! @rules(apply: ["after_or_equal:started_at"])
+    ): FocusSession! @guard
+}
+
+enum Rating {
+    MORE
+    JUST
+    HARD
+}
+
+type FocusSession {
+    id: ID!
+    planned_minutes: Int!
+    actual_minutes: Int!
+    rating: Rating!
+    started_at: DateTime!
+    ended_at: DateTime!
+    break_skipped: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
 }
 
 type AuthPayload {
