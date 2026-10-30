@@ -27,6 +27,8 @@ type Mutation {
         started_at: DateTime!
         ended_at: DateTime! @rules(apply: ["after_or_equal:started_at"])
     ): FocusSession! @guard
+
+    deleteSession(id: ID!): Boolean! @guard
 }
 
 enum Rating {
