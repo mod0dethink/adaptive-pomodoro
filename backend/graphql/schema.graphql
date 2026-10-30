@@ -3,6 +3,9 @@ scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date
 type Query {
     # @auth: ログイン中のユーザーを返す（未ログインなら null）
     me: User @auth
+
+    # 自分の記録の一覧（開始日時の新しい順）
+    sessions: [FocusSession!]! @guard
 }
 
 type Mutation {
