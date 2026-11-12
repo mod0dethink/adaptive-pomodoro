@@ -6,6 +6,15 @@ type Query {
 
     # 自分の記録の一覧（開始日時の新しい順）
     sessions: [FocusSession!]! @guard
+
+    # 今日のセット長と休憩時間（分）、当日補正がかかっているか
+    nextSession: NextSession! @guard
+}
+
+type NextSession {
+    set_minutes: Int!
+    break_minutes: Int!
+    adjusted: Boolean!
 }
 
 type Mutation {

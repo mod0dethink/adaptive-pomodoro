@@ -16,6 +16,12 @@ class UserStateService
 
     private const MAX_MINUTES = 60;
 
+    // 保存されている基準セット長を返す（まだ記録がなく user_states がない人は25分）
+    public function baseMinutes(User $user): int
+    {
+        return UserState::find($user->id)?->base_minutes ?? self::INITIAL_MINUTES;
+    }
+
     // ユーザーの記録から基準セット長と連続回数を作り直し、user_states に保存する
     public function recalculate(User $user): void
     {
