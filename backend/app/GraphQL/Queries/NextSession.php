@@ -12,14 +12,18 @@ final readonly class NextSession
     /** @param  array{}  $args */
     public function __invoke(null $_, array $args): array
     {
-        // 今は当日補正を入れていないので、今日のセット長は基準セット長と同じ
-        $setMinutes = $this->userStates->baseMinutes(Auth::user());
+        $user = Auth::user();
+        $setMinutes = $this->userStates->todaySetMinutes($user);
+
+        // 10〜60分に収めた結果も含めて、実際に基準セット長からどれだけ変わったか
+        $adjustment = $setMinutes - $this->userStates->baseMinutes($user);
 
         return [
             'set_minutes' => $setMinutes,
             // 休憩時間はセット長の5分の1
             'break_minutes' => intdiv($setMinutes, 5),
-            'adjusted' => false,
+            'adjusted' => $adjustment !== 0,
+            'adjustment_minutes' => $adjustment,
         ];
     }
 }

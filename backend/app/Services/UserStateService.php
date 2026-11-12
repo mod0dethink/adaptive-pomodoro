@@ -24,6 +24,15 @@ class UserStateService
         return UserState::find($user->id)?->base_minutes ?? self::INITIAL_MINUTES;
     }
 
+    // 今日のセット長を返す（基準セット長 + 当日補正。10〜60分に収める）
+    public function todaySetMinutes(User $user): int
+    {
+        $today = $this->dailyAdjustment->dayOf(now());
+        $adjustment = $this->dailyAdjustment->adjustmentFor($user->focusSessions()->get(), $today);
+
+        return max(self::MIN_MINUTES, min(self::MAX_MINUTES, $this->baseMinutes($user) + $adjustment));
+    }
+
     // ユーザーの記録から基準セット長と連続回数を作り直し、user_states に保存する
     public function recalculate(User $user): void
     {
