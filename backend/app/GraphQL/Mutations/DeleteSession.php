@@ -2,11 +2,14 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\Services\UserStateService;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 
 final readonly class DeleteSession
 {
+    public function __construct(private UserStateService $userStates) {}
+
     /** @param  array{id: string}  $args */
     public function __invoke(null $_, array $args): bool
     {
@@ -18,6 +21,9 @@ final readonly class DeleteSession
         }
 
         $session->delete();
+
+        // 記録が減ったので、基準セット長を作り直す
+        $this->userStates->recalculate(Auth::user());
 
         return true;
     }

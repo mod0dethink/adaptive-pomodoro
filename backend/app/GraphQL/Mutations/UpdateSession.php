@@ -3,11 +3,14 @@
 namespace App\GraphQL\Mutations;
 
 use App\Models\FocusSession;
+use App\Services\UserStateService;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 
 final readonly class UpdateSession
 {
+    public function __construct(private UserStateService $userStates) {}
+
     /** @param  array{id: string, actual_minutes?: int|null, rating?: string|null, break_skipped?: bool|null}  $args */
     public function __invoke(null $_, array $args): FocusSession
     {
@@ -24,14 +27,17 @@ final readonly class UpdateSession
             fn ($value) => $value !== null,
         );
 
-        // 変更後の値で、途中終了のセットに「まだいけた」が付かないか確認する
-        $actual = $changes['actual_minutes'] ?? $session->actual_minutes;
-        $rating = $changes['rating'] ?? $session->rating;
-        if ($actual < $session->planned_minutes && $rating === 'MORE') {
+        // 変更後の値で、途中終了のセットに「まだいけた」が付かないか確認してから保存する
+        $session->fill($changes);
+
+        if ($session->hasInvalidRating()) {
             throw new Error('途中で終了したセットでは「まだいけた」を選べません');
         }
 
-        $session->update($changes);
+        $session->save();
+
+        // 記録が変わったので、基準セット長を作り直す
+        $this->userStates->recalculate(Auth::user());
 
         return $session;
     }

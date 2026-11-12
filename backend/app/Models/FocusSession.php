@@ -14,6 +14,12 @@ class FocusSession extends Model
         'break_skipped' => false,
     ];
 
+    // 予定より短く終えたセット（途中で終了）に「まだいけた」が付いていないか
+    public function hasInvalidRating(): bool
+    {
+        return $this->actual_minutes < $this->planned_minutes && $this->rating === 'MORE';
+    }
+
     // DB から取り出すとき、日時は日付オブジェクト、break_skipped は true/false に変換する
     protected function casts(): array
     {
