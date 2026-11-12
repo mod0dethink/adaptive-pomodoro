@@ -21,11 +21,19 @@ type Mutation {
     logout: Boolean! @guard
 
     createSession(
-        planned_minutes: Int! @rules(apply: ["min:1"])
-        actual_minutes: Int! @rules(apply: ["min:0"])
+        planned_minutes: Int! @rules(apply: ["integer", "min:1"])
+        actual_minutes: Int! @rules(apply: ["integer", "min:0"])
         rating: Rating!
         started_at: DateTime!
         ended_at: DateTime! @rules(apply: ["after_or_equal:started_at"])
+    ): FocusSession! @guard
+
+    # actual_minutes・rating・break_skipped は、送った項目だけが更新される
+    updateSession(
+        id: ID!
+        actual_minutes: Int @rules(apply: ["integer", "min:0"])
+        rating: Rating
+        break_skipped: Boolean
     ): FocusSession! @guard
 
     deleteSession(id: ID!): Boolean! @guard

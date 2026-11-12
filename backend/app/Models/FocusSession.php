@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 // create() で一度に書き込んでよい項目（これ以外は書き込めない）
-#[Fillable(['user_id', 'planned_minutes', 'actual_minutes', 'rating', 'started_at', 'ended_at'])]
+#[Fillable(['user_id', 'planned_minutes', 'actual_minutes', 'rating', 'started_at', 'ended_at', 'break_skipped'])]
 class FocusSession extends Model
 {
     // 作った直後のオブジェクトにも、DB の初期値と同じ値を持たせる
